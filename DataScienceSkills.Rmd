@@ -2,7 +2,9 @@
 title: "Project 3"
 author: "Alain T Kuiete"
 date: "10/17/2019"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -15,26 +17,77 @@ library(dplyr)
 library(tidyr)
 ```
 
+### Data Science Skills
 
+#### Data Science General Skills
 
-### Download data
-#### Data Science General Skills required
+##### Downloading data
 ```{r}
 dsg <- read.csv("https://raw.githubusercontent.com/AlainKuiete/DATA607/master/ds_general_skills_revised.csv" )
 str(dsg)
-dsg
-?read.csv()
 ```
+
+#### Subsetting the Data Science soft Skills 
+```{r}
+dskg <-dsg[1:15,]
+```
+
+#### reshaping my dataframe
+```{r}
+colnames(dskg) <- c("D.Skills", "LinkedIn", "Indeed", "SimplyHired", "Monster")
+dskg$LinkedIn <- as.numeric(gsub(",","",dskg$LinkedIn))
+dskg$Indeed <- as.numeric(gsub(",","",dskg$Indeed))
+dskg$SimplyHired <- as.numeric(gsub(",","",dskg$SimplyHired))
+dskg$Monster <- as.numeric(gsub(",","",dskg$Monster))
+```
+
+
+#### Computation
+```{r}
+s.dskg <- summarise(dskg, sL=sum(LinkedIn, na.rm=TRUE), sI= sum(Indeed, na.rm=TRUE), sS=sum(SimplyHired, na.rm=TRUE),
+           sM=sum(Monster, na.rm=TRUE))
+
+tsg <- sum(s.dskg)
+
+g.skills <- dskg%>% mutate(D.Skills, pct=(LinkedIn+Indeed+SimplyHired+Monster)/tsg)%>%
+  select(D.Skills,pct)
+g.skills
+```
+
+##### Changing the values of variable D.skill
+```{r}
+D.Skills.abv <-c("ml", "an", "st", "cs", "co", "ma", "vi","ai",
+                     "dl","nlp", "sd", "nn", "de", "pm","se")
+g.skild <- data.frame(g.skills,
+                      ds.abv = D.Skills.abv,
+                      D.Skills = g.skills$D.Skills,
+                      pct=g.skills$pct)
+
+```
+
+#### Visualisation
+
+```{r}
+ggplot(g.skild, 
+       aes(x=ds.abv, y = pct))+
+  geom_col(aes(fill=D.Skills), position = "dodge")+
+  xlab("Genaral Skills")+ylab("Overall percentage")+
+  ggtitle("General Skills for Data Science")
+```
+
+#### Analysis, Machine Learning, Statistics, Computer Science and Communication are general skill required for Data Scientists.
+
 
 
 #### Data Science Soft Skills
+
+##### Downloading data
 ```{r}
 dss <- read.csv("https://raw.githubusercontent.com/AlainKuiete/DATA607/master/ds_job_listing_software.csv")
-dss
 ```
 
 
-#### Subsetting the Data Science Skills 
+#### Subsetting the Data Science soft Skills 
 ```{r}
 dsk <- dss[1:30,1:5]
 str(dsk)
@@ -47,7 +100,6 @@ dsk$LinkedIn <- as.numeric(gsub(",","",dsk$LinkedIn))
 dsk$Indeed <- as.numeric(gsub(",","",dsk$Indeed))
 dsk$SimplyHired <- as.numeric(gsub(",","",dsk$SimplyHired))
 dsk$Monster <- as.numeric(gsub(",","",dsk$Monster))
-dsk
 ```
 
 
@@ -59,14 +111,21 @@ ts <- sum(s.dsks)
 
 skills <- dsk%>% mutate(D.Skills, pct=(LinkedIn+Indeed+SimplyHired+Monster)/ts)%>%select(D.Skills,pct)
 skill <-skills[1:10,]
+skill
 ```
 
 
 
-#### Visualysation
+#### Visualisation
 ```{r}
-ggplot(skill, aes(x=D.Skills, y = pct))+ geom_col(aes(fill=D.Skills), position = "dodge")+xlab("Computer Skills")+ylab("Overall percentage")+ggtitle("Top 10 Data Science Skills")
+ggplot(skill, 
+       aes(x=D.Skills, y = pct))+ 
+  geom_col(aes(fill=D.Skills), position = "dodge")+
+  xlab("Computer Skills")+ylab("Overall percentage")+
+  ggtitle("Top 10 Sofware Skills for Data Science")
 ```
 
+### Python and R are the most software computer skills recommanded for Data Scientist.
 
 
+##### Reference: The Most in Demand Skills for Data Scientists by Jeff Hale. Toward Data Science
