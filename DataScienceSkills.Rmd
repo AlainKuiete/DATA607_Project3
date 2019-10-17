@@ -1,0 +1,72 @@
+---
+title: "Project 3"
+author: "Alain T Kuiete"
+date: "10/17/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+```
+
+
+
+### Download data
+#### Data Science General Skills required
+```{r}
+dsg <- read.csv("https://raw.githubusercontent.com/AlainKuiete/DATA607/master/ds_general_skills_revised.csv" )
+str(dsg)
+dsg
+?read.csv()
+```
+
+
+#### Data Science Soft Skills
+```{r}
+dss <- read.csv("https://raw.githubusercontent.com/AlainKuiete/DATA607/master/ds_job_listing_software.csv")
+dss
+```
+
+
+#### Subsetting the Data Science Skills 
+```{r}
+dsk <- dss[1:30,1:5]
+str(dsk)
+```
+
+#### reshaping my dataframe
+```{r}
+colnames(dsk) <- c("D.Skills", "LinkedIn", "Indeed", "SimplyHired", "Monster")
+dsk$LinkedIn <- as.numeric(gsub(",","",dsk$LinkedIn))
+dsk$Indeed <- as.numeric(gsub(",","",dsk$Indeed))
+dsk$SimplyHired <- as.numeric(gsub(",","",dsk$SimplyHired))
+dsk$Monster <- as.numeric(gsub(",","",dsk$Monster))
+dsk
+```
+
+
+#### Computation
+```{r}
+s.dsks <- summarise(dsk, sL=sum(LinkedIn), sI= sum(Indeed), sS=sum(SimplyHired),
+           sM=sum(Monster))
+ts <- sum(s.dsks)
+
+skills <- dsk%>% mutate(D.Skills, pct=(LinkedIn+Indeed+SimplyHired+Monster)/ts)%>%select(D.Skills,pct)
+skill <-skills[1:10,]
+```
+
+
+
+#### Visualysation
+```{r}
+ggplot(skill, aes(x=D.Skills, y = pct))+ geom_col(aes(fill=D.Skills), position = "dodge")+xlab("Computer Skills")+ylab("Overall percentage")+ggtitle("Top 10 Data Science Skills")
+```
+
+
+
